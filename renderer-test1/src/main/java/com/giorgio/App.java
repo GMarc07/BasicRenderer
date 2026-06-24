@@ -13,7 +13,8 @@ public class App extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/giorgio/MainPage.fxml"));
 
         Scene scene = new Scene((Parent) loader.load(), 800, 600);
-
+        stage.setMinWidth(750);
+        stage.setMinHeight(650);
         stage.setTitle("3D renderer");
         stage.setScene(scene);
         stage.show();

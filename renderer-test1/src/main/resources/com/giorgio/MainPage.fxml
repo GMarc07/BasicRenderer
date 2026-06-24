@@ -5,15 +5,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.image.ImageView?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
+<HBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.giorgio.controllers.MainPageController">
 
-      <ImageView fx:id="renderView"
-            fitWidth="600"
-            fitHeight="600"
-            />
-
-      <HBox>
+      <VBox spacing="10" style="-fx-padding: 10;">
             <Button text="Main Page" onAction="#backToMain"
                   style="-fx-background-color: black;
                         -fx-border-color: #DDDDDA;
@@ -22,5 +17,10 @@
                         -fx-padding: 6 14 6 14;
                         -fx-font-size: 13;
                         -fx-cursor: hand;" />
-      </HBox>
-</VBox>
+      </VBox>
+
+      <ImageView fx:id="renderView"
+            fitWidth="600"
+            fitHeight="600" />
+
+</HBox>
