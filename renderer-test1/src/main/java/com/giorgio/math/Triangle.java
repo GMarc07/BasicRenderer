@@ -1,6 +1,6 @@
 package com.giorgio.math;
 
-class Triangle {
+public class Triangle {
     Vertex v0, v1, v2;
 
     Triangle(Vertex v0, Vertex v1, Vertex v2) {
