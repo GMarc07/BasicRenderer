@@ -3,27 +3,84 @@ package com.giorgio.Engine;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+
+import java.util.ArrayList;
 import java.util.List;
 import com.giorgio.math.*;
 
 public class sceneEngine {
 
     WritableImage image;
-    List<Mesh> meshList;
+    private int width;
+    private int height;
+    private List<Mesh> meshList = new ArrayList<>();
+    Color flatColour = Color.GREEN;
 
     public sceneEngine(WritableImage imageLink){
         this.image = imageLink;
+        this.width = (int) image.getWidth();
+        this.height = (int) image.getHeight();
     }
 
     public void render(){
         PixelWriter pixelWriter = this.image.getPixelWriter();
 
-        pixelWriter.setColor(300, 300, Color.RED);
-        for (int x= 0; x<10; x++){
-            for (int i =0; i<150; i++){
-                pixelWriter.setColor(i+300, 300+x, Color.RED);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                pixelWriter.setColor(x, y, Color.BLACK);
             }
         }
+
+        for (Mesh mesh : meshList) {
+
+            vector3 meshPos = mesh.getPosition();
+
+            for (Triangle triangle : mesh.getTriangles()) {
+                
+                vector3 worldV0 = triangle.getV0().position.Add(meshPos);
+                vector3 worldV1 = triangle.getV1().position.Add(meshPos);
+                vector3 worldV2 = triangle.getV2().position.Add(meshPos);
+
+                double fov = 300;
+                
+                double z0 = worldV0.z == 0 ? 0.0001 : worldV0.z;
+                double z1 = worldV1.z == 0 ? 0.0001 : worldV1.z;
+                double z2 = worldV2.z == 0 ? 0.0001 : worldV2.z;
+
+                int sx0 = (int) (worldV0.x / z0 * fov + width  / 2.0);
+                int sy0 = (int) (-worldV0.y / z0 * fov + height / 2.0);
+
+                int sx1 = (int) (worldV1.x / z1 * fov + width  / 2.0);
+                int sy1 = (int) (-worldV1.y / z1 * fov + height / 2.0);
+
+                int sx2 = (int) (worldV2.x / z2 * fov + width  / 2.0);
+                int sy2 = (int) (-worldV2.y / z2 * fov + height / 2.0);
+
+                int minX = Math.max(0, Math.min(sx0, Math.min(sx1, sx2)));
+                int maxX = Math.min(width - 1, Math.max(sx0, Math.max(sx1, sx2)));
+                int minY = Math.max(0, Math.min(sy0, Math.min(sy1, sy2)));
+                int maxY = Math.min(height - 1, Math.max(sy0, Math.max(sy1, sy2)));
+
+                for (int y = minY; y <= maxY; y++) {
+                    for (int x = minX; x <= maxX; x++) {
+                        // 2D edge function (signed cross product) for each edge
+                        double e0 = edgeFunction(sx0, sy0, sx1, sy1, x, y);
+                        double e1 = edgeFunction(sx1, sy1, sx2, sy2, x, y);
+                        double e2 = edgeFunction(sx2, sy2, sx0, sy0, x, y);
+
+                        // inside if all same sign (all >= 0 or all <= 0)
+                        if ((e0 >= 0 && e1 >= 0 && e2 >= 0) ||
+                            (e0 <= 0 && e1 <= 0 && e2 <= 0)) {
+                            pixelWriter.setColor(x, y, Color.WHITE);
+                        }
+                    }
+                }
+            }
+            
+        }   
+    }
+    private double edgeFunction(int x0, int y0, int x1, int y1, int px, int py) {
+        return (double)(x1 - x0) * (py - y0) - (double)(y1 - y0) * (px - x0);
     }
     public void addMesh(List<Triangle> triangleList){
         Mesh mesh = new Mesh(triangleList);
@@ -31,5 +88,21 @@ public class sceneEngine {
     }
     public void addMesh(Mesh mesh){
         this.meshList.add(mesh);
+    }
+
+    public static Mesh createTestTriangle() {
+        Vertex v0 = new Vertex(new vector3(-1.0, -1.0, 0.0));
+        Vertex v1 = new Vertex(new vector3( 1.0, -1.0, 0.0));
+        Vertex v2 = new Vertex(new vector3( 0.0,  1.0, 0.0));
+    
+        Triangle triangle = new Triangle(v0, v1, v2);
+    
+        List<Triangle> triangles = new ArrayList<>();
+        triangles.add(triangle);
+    
+        Mesh mesh = new Mesh(triangles);
+        mesh.setPosition(new vector3(0.0, 0.0, 5.0));
+    
+        return mesh;
     }
 }
