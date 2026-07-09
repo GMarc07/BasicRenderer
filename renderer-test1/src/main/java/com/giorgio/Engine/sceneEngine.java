@@ -5,6 +5,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.giorgio.math.*;
 
@@ -14,6 +15,8 @@ public class sceneEngine {
     private int width;
     private int height;
     private List<Mesh> meshList = new ArrayList<>();
+    private double triangleCount;
+    private double meshCount;
     Color flatColour = Color.GREEN;
 
     public sceneEngine(WritableImage imageLink){
@@ -22,6 +25,15 @@ public class sceneEngine {
         this.height = (int) image.getHeight();
     }
 
+    public List<Double> getMeshAndTriangleCount() { 
+        double meshCount = meshList.size();
+        double triangleCount = 0;
+        for (Mesh mesh : meshList) {
+           triangleCount += mesh.getTriangles().size();
+        }
+        return Arrays.asList(meshCount, triangleCount);
+
+    }
     public void render(){
         PixelWriter pixelWriter = this.image.getPixelWriter();
 
@@ -42,7 +54,7 @@ public class sceneEngine {
                 vector3 worldV2 = triangle.getV2().position.Add(meshPos);
 
                 double fov = 300;
-                
+
                 double z0 = worldV0.z == 0 ? 0.0001 : worldV0.z;
                 double z1 = worldV1.z == 0 ? 0.0001 : worldV1.z;
                 double z2 = worldV2.z == 0 ? 0.0001 : worldV2.z;
@@ -90,7 +102,14 @@ public class sceneEngine {
         this.meshList.add(mesh);
     }
 
-    public static Mesh createTestTriangle() {
+    public void removeMesh(int pos){
+        if (pos < 0 || pos > meshList.size()){
+            return;
+        }
+        meshList.remove(pos);
+    }
+
+    public Mesh createTestTriangle() {
         Vertex v0 = new Vertex(new vector3(-1.0, -1.0, 0.0));
         Vertex v1 = new Vertex(new vector3( 1.0, -1.0, 0.0));
         Vertex v2 = new Vertex(new vector3( 0.0,  1.0, 0.0));
