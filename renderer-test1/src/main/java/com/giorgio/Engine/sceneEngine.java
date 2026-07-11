@@ -14,15 +14,21 @@ public class sceneEngine {
     WritableImage image;
     private int width;
     private int height;
+    private camera setCamera;
     private List<Mesh> meshList = new ArrayList<>();
     private double triangleCount;
     private double meshCount;
     Color flatColour = Color.GREEN;
 
-    public sceneEngine(WritableImage imageLink){
+    public sceneEngine(WritableImage imageLink, camera camera){
         this.image = imageLink;
         this.width = (int) image.getWidth();
         this.height = (int) image.getHeight();
+        this.setCamera = camera;
+    }
+
+    public void setNewCamera(camera camera){
+        this.setCamera = camera;
     }
 
     public List<Double> getMeshAndTriangleCount() { 
@@ -43,6 +49,9 @@ public class sceneEngine {
             }
         }
 
+        vector3 camPos = setCamera.getCamCords();
+
+
         for (Mesh mesh : meshList) {
 
             vector3 meshPos = mesh.getPosition();
@@ -53,20 +62,24 @@ public class sceneEngine {
                 vector3 worldV1 = triangle.getV1().position.Add(meshPos);
                 vector3 worldV2 = triangle.getV2().position.Add(meshPos);
 
+                vector3 camV0 = worldV0.subtract(camPos);
+                vector3 camV1 = worldV1.subtract(camPos);
+                vector3 camV2 = worldV2.subtract(camPos);
+
                 double fov = 300;
 
-                double z0 = worldV0.z == 0 ? 0.0001 : worldV0.z;
-                double z1 = worldV1.z == 0 ? 0.0001 : worldV1.z;
-                double z2 = worldV2.z == 0 ? 0.0001 : worldV2.z;
+                double z0 = camV0.z == 0 ? 0.0001 : camV0.z;
+                double z1 = camV1.z == 0 ? 0.0001 : camV1.z;
+                double z2 = camV2.z == 0 ? 0.0001 : camV2.z;
 
-                int sx0 = (int) (worldV0.x / z0 * fov + width  / 2.0);
-                int sy0 = (int) (-worldV0.y / z0 * fov + height / 2.0);
+                int sx0 = (int) (camV0.x / z0 * fov + width  / 2.0);
+                int sy0 = (int) (-camV0.y / z0 * fov + height / 2.0);
 
-                int sx1 = (int) (worldV1.x / z1 * fov + width  / 2.0);
-                int sy1 = (int) (-worldV1.y / z1 * fov + height / 2.0);
+                int sx1 = (int) (camV1.x / z1 * fov + width  / 2.0);
+                int sy1 = (int) (-camV1.y / z1 * fov + height / 2.0);
 
-                int sx2 = (int) (worldV2.x / z2 * fov + width  / 2.0);
-                int sy2 = (int) (-worldV2.y / z2 * fov + height / 2.0);
+                int sx2 = (int) (camV2.x / z2 * fov + width  / 2.0);
+                int sy2 = (int) (-camV2.y / z2 * fov + height / 2.0);
 
                 int minX = Math.max(0, Math.min(sx0, Math.min(sx1, sx2)));
                 int maxX = Math.min(width - 1, Math.max(sx0, Math.max(sx1, sx2)));
