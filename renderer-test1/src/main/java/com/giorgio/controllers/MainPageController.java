@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.animation.AnimationTimer;
 
 public class MainPageController {
 
@@ -34,6 +35,14 @@ public class MainPageController {
         this.scene.addMesh(this.scene.createTestTriangle());
         this.scene.render();
         this.setMeshTriangleCountScene();
+
+        AnimationTimer loop = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                scene.render();
+            }
+        };
+        loop.start();
     }
     @FXML
     private void backToMain(){

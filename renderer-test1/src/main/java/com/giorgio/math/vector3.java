@@ -1,7 +1,7 @@
 package com.giorgio.math;
 
 public class vector3 {
-    Double x,y,z;
+    final public Double x,y,z;
 
     public vector3(Double x,Double y, Double z){
         this.x = x;
@@ -51,7 +51,7 @@ public class vector3 {
         return new vector3(rx, ry, rz);
     }
     public vector3 normalise(){
-        double sum = this.x + this.y +this.z;
+        double sum = Math.sqrt(this.x*this.x + this.y*this.y +this.z*this.z);
         return new vector3(this.x/sum,this.y/sum,this.z/sum);
     }
     public vector3 cross(vector3 other){        
