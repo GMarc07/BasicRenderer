@@ -1,20 +1,23 @@
 package com.giorgio.controllers;
 import javafx.scene.control.Label;
+import java.util.HashSet;
 import java.util.List;
 import com.giorgio.Engine.camera;
 import com.giorgio.Engine.sceneEngine;
 import com.giorgio.math.vector3;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.animation.AnimationTimer;
+import javafx.scene.input.KeyCode;
+import java.util.Set;
 
 public class MainPageController {
 
     @FXML
     private ImageView renderView;
-
     @FXML
     private Button testButton;
     @FXML
@@ -26,6 +29,8 @@ public class MainPageController {
     private sceneEngine scene;
     private long lastFpsUpdate = 0;
     private int frameCount = 0;
+    private Scene javafxScene;
+    private Set <KeyCode> keys = new HashSet<>();
 
     @FXML
     public void initialize() {
@@ -36,22 +41,32 @@ public class MainPageController {
         this.scene.addMesh(this.scene.createTestTriangle());
         this.scene.addMesh(this.scene.createTestTriangle());
         this.scene.render();
+        this.javafxScene = renderView.getScene();
         this.setMeshTriangleCountScene();
 
         AnimationTimer loop = new AnimationTimer() {
             private double fps;
 
-            
             @Override
             public void handle(long now) { //now is the current timestamp.
                 fps = calculateFps(now);
-                System.out.println(fps);
+                checkKeyboardPresses();
+                if (fps > 0){
+                    System.out.println(fps);
+                }
                 scene.render();
             }
         };
         loop.start();
     }
-
+    private void checkKeyboardPresses(){
+        if (this.javafxScene == null){
+            this.javafxScene = renderView.getScene();
+        }
+        javafxScene.setOnKeyPressed(event -> {
+            System.out.println("Pressed: " + event.getCode());
+        });
+    }
     private double calculateFps(long now) {
         frameCount++;
     
