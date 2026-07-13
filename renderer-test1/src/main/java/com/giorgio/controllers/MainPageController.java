@@ -24,6 +24,8 @@ public class MainPageController {
 
     private WritableImage writableImage;
     private sceneEngine scene;
+    private long lastFpsUpdate = 0;
+    private int frameCount = 0;
 
     @FXML
     public void initialize() {
@@ -37,12 +39,39 @@ public class MainPageController {
         this.setMeshTriangleCountScene();
 
         AnimationTimer loop = new AnimationTimer() {
+            private double fps;
+
+            
             @Override
-            public void handle(long now) {
+            public void handle(long now) { //now is the current timestamp.
+                fps = calculateFps(now);
+                System.out.println(fps);
                 scene.render();
             }
         };
         loop.start();
+    }
+
+    private double calculateFps(long now) {
+        frameCount++;
+    
+        if (lastFpsUpdate == 0) {
+            lastFpsUpdate = now;
+            return 0;
+        }
+    
+        long elapsed = now - lastFpsUpdate;
+    
+        if (elapsed >= 1_000_000_000L) {
+            double fps = frameCount / (elapsed / 1_000_000_000.0);
+    
+            frameCount = 0;
+            lastFpsUpdate = now;
+    
+            return fps;
+        }
+    
+        return -1;
     }
     @FXML
     private void backToMain(){
