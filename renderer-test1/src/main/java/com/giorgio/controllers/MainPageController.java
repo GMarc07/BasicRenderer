@@ -30,7 +30,7 @@ public class MainPageController {
     private long lastFpsUpdate = 0;
     private int frameCount = 0;
     private Scene javafxScene;
-    private Set <KeyCode> keys = new HashSet<>();
+    private Set <KeyCode> keysPressed = new HashSet<>();
 
     @FXML
     public void initialize() {
@@ -64,8 +64,12 @@ public class MainPageController {
             this.javafxScene = renderView.getScene();
         }
         javafxScene.setOnKeyPressed(event -> {
-            System.out.println("Pressed: " + event.getCode());
+            keysPressed.add(event.getCode());
         });
+
+        javafxScene.setOnKeyReleased(event ->{
+            keysPressed.remove(event.getCode());
+        }); 
     }
     private double calculateFps(long now) {
         frameCount++;
