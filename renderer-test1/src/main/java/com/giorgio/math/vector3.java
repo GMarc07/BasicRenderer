@@ -13,6 +13,9 @@ public class vector3 {
         this.y = 0.0;
         this.z = 0.0;
     }
+    public void print(){
+        System.out.println("Vector3: " + this.x + " " + this.y + " " + this.z);
+    }
 
     public vector3 Add(vector3 otherVector){
         double rx = this.x + otherVector.x;

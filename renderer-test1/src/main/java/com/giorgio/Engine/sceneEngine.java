@@ -30,6 +30,12 @@ public class sceneEngine {
     public void setNewCamera(camera camera){
         this.setCamera = camera;
     }
+    public vector3 getCamCords(){
+        return this.setCamera.getCamCords();
+    }
+    public void setCamCords(vector3 newCords){
+        this.setCamera.setCamCords(newCords);
+    }
 
     public List<Double> getMeshAndTriangleCount() { 
         double meshCount = meshList.size();

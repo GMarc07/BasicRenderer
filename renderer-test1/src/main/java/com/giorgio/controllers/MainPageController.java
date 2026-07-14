@@ -30,7 +30,17 @@ public class MainPageController {
     private long lastFpsUpdate = 0;
     private int frameCount = 0;
     private Scene javafxScene;
+    private boolean keysChanged = false;
     private Set <KeyCode> keysPressed = new HashSet<>();
+    private Set<KeyCode> validKeys = new HashSet<>(
+    Set.of(
+        KeyCode.W,
+        KeyCode.A,
+        KeyCode.S,
+        KeyCode.D,
+        KeyCode.R
+    )
+    );
 
     @FXML
     public void initialize() {
@@ -41,7 +51,7 @@ public class MainPageController {
         this.scene.addMesh(this.scene.createTestTriangle());
         this.scene.addMesh(this.scene.createTestTriangle());
         this.scene.render();
-        this.javafxScene = renderView.getScene();
+        this.javafxScene = renderView.getScene(); //usually sets null here
         this.setMeshTriangleCountScene();
 
         AnimationTimer loop = new AnimationTimer() {
@@ -59,17 +69,44 @@ public class MainPageController {
         };
         loop.start();
     }
+    private void adjustCamCords(){
+        vector3 currentCords = this.scene.getCamCords();
+
+        if (keysPressed.contains(KeyCode.W)) {
+            currentCords = currentCords.Add(new vector3(0.0, 0.5, 0.0));
+        }
+        if (keysPressed.contains(KeyCode.S)) {
+            currentCords = currentCords.Add(new vector3(0.0, -0.5, 0.0));
+        }
+        if (keysPressed.contains(KeyCode.A)) {
+            currentCords = currentCords.Add(new vector3(-0.5, 0.0, 0.0));
+        }
+        if (keysPressed.contains(KeyCode.D)) {
+            currentCords = currentCords.Add(new vector3(0.5, 0.0, 0.0));
+        }
+        if (keysPressed.contains(KeyCode.R)){
+            currentCords = new vector3(0.0,0.0,0.0);
+        }
+    
+        this.scene.setCamCords(currentCords);
+    }
     private void checkKeyboardPresses(){
+        keysChanged = false;
         if (this.javafxScene == null){
             this.javafxScene = renderView.getScene();
         }
         javafxScene.setOnKeyPressed(event -> {
-            keysPressed.add(event.getCode());
+            if (validKeys.contains(event.getCode())){
+                keysPressed.add(event.getCode());
+                keysChanged= true;
+            }
         });
-
         javafxScene.setOnKeyReleased(event ->{
             keysPressed.remove(event.getCode());
         }); 
+        if (keysPressed.size() > 0){
+            adjustCamCords();
+        }
     }
     private double calculateFps(long now) {
         frameCount++;
