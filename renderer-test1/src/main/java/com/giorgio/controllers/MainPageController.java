@@ -24,13 +24,16 @@ public class MainPageController {
     private Label statusLabelMeshCount;
     @FXML
     private Label statusLabelTriangleCount;
+    @FXML
+    private Label LiveFpsCount;
+    @FXML
+    private Label currentCamCordsLabel;
 
     private WritableImage writableImage;
     private sceneEngine scene;
     private long lastFpsUpdate = 0;
     private int frameCount = 0;
     private Scene javafxScene;
-    private boolean keysChanged = false;
     private Set <KeyCode> keysPressed = new HashSet<>();
     private Set<KeyCode> validKeys = new HashSet<>(
     Set.of(
@@ -38,7 +41,9 @@ public class MainPageController {
         KeyCode.A,
         KeyCode.S,
         KeyCode.D,
-        KeyCode.R
+        KeyCode.R,
+        KeyCode.E,
+        KeyCode.Q
     )
     );
 
@@ -63,6 +68,7 @@ public class MainPageController {
                 checkKeyboardPresses();
                 if (fps > 0){
                     System.out.println(fps);
+                    LiveFpsCount.setText("Fps: " + Math.round(fps));
                 }
                 scene.render();
             }
@@ -84,21 +90,26 @@ public class MainPageController {
         if (keysPressed.contains(KeyCode.D)) {
             currentCords = currentCords.Add(new vector3(0.5, 0.0, 0.0));
         }
+        if (keysPressed.contains(KeyCode.E)) {
+            currentCords = currentCords.Add(new vector3(0.0, 0.0, 0.5));
+        }
+        if (keysPressed.contains(KeyCode.Q)) {
+            currentCords = currentCords.Add(new vector3(0.0, 0.0, -0.5));
+        }
         if (keysPressed.contains(KeyCode.R)){
             currentCords = new vector3(0.0,0.0,0.0);
         }
     
         this.scene.setCamCords(currentCords);
+        currentCamCordsLabel.setText("Cam cords: "+ currentCords.x+ " "+ currentCords.y+ " "+currentCords.z +" ");
     }
     private void checkKeyboardPresses(){
-        keysChanged = false;
         if (this.javafxScene == null){
             this.javafxScene = renderView.getScene();
         }
         javafxScene.setOnKeyPressed(event -> {
             if (validKeys.contains(event.getCode())){
                 keysPressed.add(event.getCode());
-                keysChanged= true;
             }
         });
         javafxScene.setOnKeyReleased(event ->{
