@@ -3,11 +3,11 @@ package com.giorgio.Engine;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import com.giorgio.math.*;
+import javafx.scene.image.PixelFormat;
 
 public class sceneEngine {
 
@@ -16,6 +16,8 @@ public class sceneEngine {
     private int height;
     private camera setCamera;
     private List<Mesh> meshList = new ArrayList<>();
+    private int[] pixelBuffer;
+    private int[] clearBuffer;
     Color flatColour = Color.GREEN;
 
     public sceneEngine(WritableImage imageLink, camera camera){
@@ -23,6 +25,9 @@ public class sceneEngine {
         this.width = (int) image.getWidth();
         this.height = (int) image.getHeight();
         this.setCamera = camera;
+        pixelBuffer = new int[width * height];
+        clearBuffer = new int[width * height];
+        Arrays.fill(clearBuffer, 0xFF000000); 
     }
 
     public void setNewCamera(camera camera){
@@ -47,11 +52,7 @@ public class sceneEngine {
     public void render(){
         PixelWriter pixelWriter = this.image.getPixelWriter();
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                pixelWriter.setColor(x, y, Color.BLACK);
-            }
-        }
+        System.arraycopy(clearBuffer, 0, pixelBuffer, 0, pixelBuffer.length);
 
         vector3 camPos = setCamera.getCamCords();
 
@@ -100,15 +101,15 @@ public class sceneEngine {
                         double e2 = edgeFunction(sx2, sy2, sx0, sy0, x, y);
 
                         // inside if all same sign (all >= 0 or all <= 0)
-                        if ((e0 >= 0 && e1 >= 0 && e2 >= 0) ||
-                            (e0 <= 0 && e1 <= 0 && e2 <= 0)) {
-                            pixelWriter.setColor(x, y, Color.WHITE);
+                        if ((e0 >= 0 && e1 >= 0 && e2 >= 0) || (e0 <= 0 && e1 <= 0 && e2 <= 0)) {
+                            pixelBuffer[y * width + x] = 0xFFFFFFFF;
                         }
                     }
                 }
             }
             
-        }   
+        }  
+        pixelWriter.setPixels(0, 0, width, height, PixelFormat.getIntArgbInstance(), pixelBuffer, 0, width); 
     }
     private double edgeFunction(int x0, int y0, int x1, int y1, int px, int py) {
         return (double)(x1 - x0) * (py - y0) - (double)(y1 - y0) * (px - x0);
