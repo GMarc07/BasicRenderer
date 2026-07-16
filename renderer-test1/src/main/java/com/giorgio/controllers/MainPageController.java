@@ -2,8 +2,7 @@ package com.giorgio.controllers;
 import javafx.scene.control.Label;
 import java.util.HashSet;
 import java.util.List;
-import com.giorgio.Engine.camera;
-import com.giorgio.Engine.sceneEngine;
+import com.giorgio.Engine.*;
 import com.giorgio.math.vector3;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -56,6 +55,7 @@ public class MainPageController {
         this.scene.addMesh(this.scene.createTestTriangle());
         this.scene.addMesh(this.scene.createTestTriangle());
         this.scene.render();
+        renderNPyramids(50000);
         this.javafxScene = renderView.getScene(); //usually sets null here
         this.setMeshTriangleCountScene();
 
@@ -150,6 +150,17 @@ public class MainPageController {
         List<Double> res = this.scene.getMeshAndTriangleCount();
         statusLabelMeshCount.setText("Meshes: " + res.get(0));
         statusLabelTriangleCount.setText("Triangles: " + res.get(1));
+    }
+
+    private void renderNPyramids(Integer num){
+        for (int i = 0; i < num; i++) {
+
+            double value1 = -50.0 + Math.random() * 1000.0;
+            double value2 = -50.0 + Math.random() * 1000.0;
+            double value3 = -50.0 + Math.random() * 1000.0;
+            vector3 pos = new vector3(value1,value2,value3);
+            this.scene.addMesh(meshInitialiser.createPyramid(pos));
+        }
     }
 
 }
