@@ -30,6 +30,17 @@
                    layoutY="20.0"
                    text="Triangles: "
                    style="-fx-font-size: 16px;" />
+
+            <Label fx:id="LiveFpsCount"
+                  layoutX="20.0"
+                   layoutY="20.0"
+                   text="Fps: "
+                   style="-fx-font-size: 16px;" />
+            <Label fx:id="currentCamCordsLabel"
+                  layoutX="20.0"
+                   layoutY="20.0"
+                   text="Cam Cords: "
+                   style="-fx-font-size: 16px;" />
       </VBox>
 
       <Region HBox.hgrow="ALWAYS"
