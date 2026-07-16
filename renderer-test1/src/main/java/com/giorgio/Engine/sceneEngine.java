@@ -16,8 +16,6 @@ public class sceneEngine {
     private int height;
     private camera setCamera;
     private List<Mesh> meshList = new ArrayList<>();
-    private double triangleCount;
-    private double meshCount;
     Color flatColour = Color.GREEN;
 
     public sceneEngine(WritableImage imageLink, camera camera){
@@ -71,7 +69,9 @@ public class sceneEngine {
                 vector3 camV0 = worldV0.subtract(camPos);
                 vector3 camV1 = worldV1.subtract(camPos);
                 vector3 camV2 = worldV2.subtract(camPos);
-
+                if (camV0.z <= 0 || camV1.z <= 0 || camV2.z <= 0) { //skips triangle if its behind the camera
+                    continue;
+                }
                 double fov = 300;
 
                 double z0 = camV0.z == 0 ? 0.0001 : camV0.z;
