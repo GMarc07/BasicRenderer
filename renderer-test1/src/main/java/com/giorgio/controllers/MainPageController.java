@@ -59,15 +59,21 @@ public class MainPageController {
         this.scene.addMesh(this.scene.createTestTriangle());
         this.scene.addMesh(this.scene.createTestTriangle());
         this.scene.render();
-        renderNPyramids(50000);
+        renderNPyramids(200);
         this.javafxScene = renderView.getScene(); //usually sets null here
         this.setMeshTriangleCountScene();
 
         AnimationTimer loop = new AnimationTimer() {
             private double fps;
+            private long lastFrameTime = 0;
+            private final long TARGET_FRAME_TIME = 1_000_000_000L / 60; 
 
             @Override
             public void handle(long now) { //now is the current timestamp.
+                if (now - lastFrameTime < TARGET_FRAME_TIME) {
+                    return; // not enough time has passed, skip this frame
+                }
+                lastFrameTime = now;
                 fps = calculateFps(now);
                 checkKeyboardPresses();
                 if (fps > 0){
