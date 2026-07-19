@@ -29,7 +29,9 @@ public class sceneEngine {
         clearBuffer = new int[width * height];
         Arrays.fill(clearBuffer, 0xFF000000); 
     }
-
+    public camera getCamera(){
+        return this.setCamera;
+    }
     public void setNewCamera(camera camera){
         this.setCamera = camera;
     }
@@ -67,9 +69,15 @@ public class sceneEngine {
                 vector3 worldV1 = triangle.getV1().position.Add(meshPos);
                 vector3 worldV2 = triangle.getV2().position.Add(meshPos);
 
-                vector3 camV0 = worldV0.subtract(camPos);
-                vector3 camV1 = worldV1.subtract(camPos);
-                vector3 camV2 = worldV2.subtract(camPos);
+
+                vector3 newPosV0 = worldV0.subtract(camPos);
+                vector3 newPosV1 = worldV1.subtract(camPos);
+                vector3 newPosV2 = worldV2.subtract(camPos);
+
+                vector3 camV0 = vector3.applyPitch(vector3.applyYaw(newPosV0, setCamera.getYaw()), setCamera.getPitch());
+                vector3 camV1 = vector3.applyPitch(vector3.applyYaw(newPosV1, setCamera.getYaw()), setCamera.getPitch());
+                vector3 camV2 = vector3.applyPitch(vector3.applyYaw(newPosV2, setCamera.getYaw()), setCamera.getPitch());
+        
                 if (camV0.z <= 0 || camV1.z <= 0 || camV2.z <= 0) { //skips triangle if its behind the camera
                     continue;
                 }

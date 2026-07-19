@@ -14,6 +14,30 @@ public class camera {
         this.camCords = camCords;
         this.camDirection = Camdirection;
     }
+    public double getPitch() {
+        return Math.atan2(
+            camDirection.y,
+            Math.sqrt(camDirection.x * camDirection.x +
+                      camDirection.z * camDirection.z)
+        );
+    }
+    public double getYaw() {
+        return Math.atan2(camDirection.z, camDirection.x);
+    }
+
+    public void rotateCamera(double yawDelta, double pitchDelta) {
+        double newYaw = this.getYaw() + yawDelta;
+        double newPitch = this.getPitch() + pitchDelta;
+    
+        newPitch = Math.max(-Math.PI / 2 + 0.01, Math.min(Math.PI / 2 - 0.01, newPitch));
+    
+        // reconstruct direction vector from angles
+        double x = Math.cos(newPitch) * Math.cos(newYaw);
+        double y = Math.sin(newPitch);
+        double z = Math.cos(newPitch) * Math.sin(newYaw);
+    
+        this.setCamDirection(new vector3(x, y, z));
+    }
 
     public void setCamCords(vector3 newCords){
         this.camCords = newCords;

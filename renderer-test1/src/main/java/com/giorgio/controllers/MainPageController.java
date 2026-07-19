@@ -42,7 +42,11 @@ public class MainPageController {
         KeyCode.D,
         KeyCode.R,
         KeyCode.E,
-        KeyCode.Q
+        KeyCode.Q,
+        KeyCode.U, //pitch up
+        KeyCode.J, //pitch down
+        KeyCode.H, //Yaw left
+        KeyCode.K //Yaw right
     )
     );
 
@@ -77,7 +81,8 @@ public class MainPageController {
     }
     private void adjustCamCords(){
         vector3 currentCords = this.scene.getCamCords();
-
+        double adjustPitch = 0.0;
+        double adjustYaw = 0.0;
         if (keysPressed.contains(KeyCode.W)) {
             currentCords = currentCords.Add(new vector3(0.0, 0.5, 0.0));
         }
@@ -96,10 +101,24 @@ public class MainPageController {
         if (keysPressed.contains(KeyCode.Q)) {
             currentCords = currentCords.Add(new vector3(0.0, 0.0, -0.5));
         }
+        if (keysPressed.contains(KeyCode.U)){
+            adjustPitch += 0.02;
+        }
+        if (keysPressed.contains(KeyCode.J)){
+            adjustPitch -= 0.02;
+        }
+        if (keysPressed.contains(KeyCode.H)){
+            adjustYaw += 0.03;
+        }
+        if (keysPressed.contains(KeyCode.K)){
+            adjustYaw -= 0.03;
+        }
         if (keysPressed.contains(KeyCode.R)){
             currentCords = new vector3(0.0,0.0,0.0);
+            this.scene.getCamera().setCamDirection(new vector3(0.0,0.0,0.0));
         }
     
+        this.scene.getCamera().rotateCamera(adjustYaw,adjustPitch);
         this.scene.setCamCords(currentCords);
         currentCamCordsLabel.setText("Cam cords: "+ currentCords.x+ " "+ currentCords.y+ " "+currentCords.z +" ");
     }

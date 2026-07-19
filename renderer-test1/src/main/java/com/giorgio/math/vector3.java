@@ -66,4 +66,16 @@ public class vector3 {
         double res3 = ((this.x *other.y)-(other.x*this.y));
         return new vector3(res1,res2,res3);
     }
+    public static vector3 applyYaw(vector3 v, double yaw) {
+        double x =  v.x * Math.cos(yaw) + v.z * Math.sin(yaw);
+        double y =  v.y;
+        double z = -v.x * Math.sin(yaw) + v.z * Math.cos(yaw);
+        return new vector3(x, y, z);
+    }
+    public static vector3 applyPitch(vector3 v, double pitch) {
+        double x =  v.x;
+        double y =  v.y * Math.cos(pitch) - v.z * Math.sin(pitch);
+        double z =  v.y * Math.sin(pitch) + v.z * Math.cos(pitch);
+        return new vector3(x, y, z);
+    }
 }
