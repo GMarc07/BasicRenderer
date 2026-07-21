@@ -19,6 +19,7 @@ public class sceneEngine {
     private List<Mesh> meshList = new ArrayList<>();
     private int[] pixelBuffer;
     private int[] clearBuffer;
+    private double[] depthBuffer;
     Color flatColour = Color.GREEN;
 
     public sceneEngine(WritableImage imageLink, camera camera){
@@ -28,6 +29,7 @@ public class sceneEngine {
         this.setCamera = camera;
         pixelBuffer = new int[width * height];
         clearBuffer = new int[width * height];
+        depthBuffer = new double[width * height]; 
         Arrays.fill(clearBuffer, 0xFF000000); 
     }
     public camera getCamera(){
@@ -58,7 +60,8 @@ public class sceneEngine {
         System.arraycopy(clearBuffer, 0, pixelBuffer, 0, pixelBuffer.length);
 
         vector3 camPos = setCamera.getCamCords();
-
+        
+        Arrays.fill(depthBuffer, Double.MAX_VALUE);
 
         for (Mesh mesh : meshList) {
             int meshColour;
@@ -71,25 +74,26 @@ public class sceneEngine {
             }
 
             vector3 meshPos = mesh.getPosition();
-
+            
             for (Triangle triangle : mesh.getTriangles()) {
-                
+                //adds mesh position to triangle vectors
                 vector3 worldV0 = triangle.getV0().position.Add(meshPos);
                 vector3 worldV1 = triangle.getV1().position.Add(meshPos);
                 vector3 worldV2 = triangle.getV2().position.Add(meshPos);
 
-
+                //offsets by camera position
                 vector3 newPosV0 = worldV0.subtract(camPos);
                 vector3 newPosV1 = worldV1.subtract(camPos);
                 vector3 newPosV2 = worldV2.subtract(camPos);
-
+                //applies camera direction to them.
                 vector3 camV0 = vector3.applyPitch(vector3.applyYaw(newPosV0, setCamera.getYaw()), setCamera.getPitch());
                 vector3 camV1 = vector3.applyPitch(vector3.applyYaw(newPosV1, setCamera.getYaw()), setCamera.getPitch());
                 vector3 camV2 = vector3.applyPitch(vector3.applyYaw(newPosV2, setCamera.getYaw()), setCamera.getPitch());
-        
+
                 if (camV0.z <= 0 || camV1.z <= 0 || camV2.z <= 0) { //skips triangle if its behind the camera
                     continue;
-                }
+                } 
+                double triangleDepth = (camV0.z + camV1.z + camV2.z)/3;
                 double fov = 300;
 
                 double z0 = camV0.z == 0 ? 0.0001 : camV0.z;
@@ -119,7 +123,11 @@ public class sceneEngine {
 
                         // inside if all same sign (all >= 0 or all <= 0)
                         if ((e0 >= 0 && e1 >= 0 && e2 >= 0) || (e0 <= 0 && e1 <= 0 && e2 <= 0)) {
-                            pixelBuffer[y * width + x] =  meshColour;
+                            int index = y * width + x;
+                            if (triangleDepth < depthBuffer[index]){ //checks if theres a triangle infront of it.
+                                pixelBuffer[index] =  meshColour;
+                                depthBuffer[index] = triangleDepth;
+                            }
                         }
                     }
                 }
