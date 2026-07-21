@@ -3,6 +3,8 @@ import java.util.List;
 
 public class Mesh {
     private List<Triangle> triangles;
+    private int colour = -1;
+
 
     private vector3 position; // this is the position of the mesh in the 3d space.
 
@@ -16,6 +18,12 @@ public class Mesh {
         this.position = pos;
     }
 
+    public int getColour(){
+        return colour;
+    }
+    public void setColour(int newColour){
+        this.colour =newColour;
+    }
 
     public void setPosition(vector3 newPos){
         this.position = newPos;

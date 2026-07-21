@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import com.giorgio.math.*;
 import javafx.scene.image.PixelFormat;
+import java.util.Random;
 
 public class sceneEngine {
 
@@ -60,6 +61,14 @@ public class sceneEngine {
 
 
         for (Mesh mesh : meshList) {
+            int meshColour;
+            if(mesh.getColour() == -1){
+                meshColour = randomColour();
+                mesh.setColour(meshColour);
+            }
+            else{
+                meshColour = mesh.getColour();
+            }
 
             vector3 meshPos = mesh.getPosition();
 
@@ -110,7 +119,7 @@ public class sceneEngine {
 
                         // inside if all same sign (all >= 0 or all <= 0)
                         if ((e0 >= 0 && e1 >= 0 && e2 >= 0) || (e0 <= 0 && e1 <= 0 && e2 <= 0)) {
-                            pixelBuffer[y * width + x] = 0xFFFFFFFF;
+                            pixelBuffer[y * width + x] =  meshColour;
                         }
                     }
                 }
@@ -151,5 +160,12 @@ public class sceneEngine {
         mesh.setPosition(new vector3(0.0, 0.0, 5.0));
     
         return mesh;
+    }
+    public static int randomColour() {
+        Random random = new Random();
+        int r = random.nextInt(256);
+        int g = random.nextInt(256);
+        int b = random.nextInt(256);
+        return 0xFF000000 | (r << 16) | (g << 8) | b;
     }
 }
