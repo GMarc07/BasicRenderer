@@ -12,7 +12,7 @@ public class Mesh {
         this.triangles = newMesh;
         this.position = new vector3(0.0,0.0,0.0);
     }
-
+    
     public Mesh(List<Triangle> newMesh, vector3 pos){
         this.triangles = newMesh;
         this.position = pos;

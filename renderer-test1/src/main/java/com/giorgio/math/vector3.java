@@ -1,9 +1,9 @@
 package com.giorgio.math;
 
 public class vector3 {
-    final public Double x,y,z;
+    final public double x,y,z;
 
-    public vector3(Double x,Double y, Double z){
+    public vector3(double x,double y, double z){
         this.x = x;
         this.y = y;
         this.z = z;
@@ -47,7 +47,7 @@ public class vector3 {
         double num = px + py + pz;
         return num;
     }
-    public vector3 scale(Double a){
+    public vector3 scale(double a){
         double rx = this.x * a;
         double ry = this.y * a;
         double rz = this.z * a;
