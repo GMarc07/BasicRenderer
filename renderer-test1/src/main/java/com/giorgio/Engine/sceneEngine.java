@@ -22,6 +22,7 @@ public class sceneEngine {
     private int[] clearBuffer;
     private double[] depthBuffer;
     private long lastFrameTime;
+    private boolean ready = false;
     Color flatColour = Color.GREEN;
 
     public sceneEngine(WritableImage imageLink, camera camera){
@@ -33,6 +34,11 @@ public class sceneEngine {
         clearBuffer = new int[width * height];
         depthBuffer = new double[width * height]; 
         Arrays.fill(clearBuffer, 0xFF000000); 
+    }
+
+    public void setReady(long now) {
+        this.ready = true;
+        this.lastFrameTime = now; // reset so first real frame calculates correctly
     }
     public camera getCamera(){
         return this.setCamera;
@@ -57,6 +63,7 @@ public class sceneEngine {
 
     }
     public void render(long now){
+        if (!ready) return;
         PixelWriter pixelWriter = this.image.getPixelWriter();
         System.arraycopy(clearBuffer, 0, pixelBuffer, 0, pixelBuffer.length);
         Arrays.fill(depthBuffer, Double.MAX_VALUE);

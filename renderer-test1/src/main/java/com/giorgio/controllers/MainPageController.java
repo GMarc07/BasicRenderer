@@ -56,20 +56,23 @@ public class MainPageController {
         writableImage = new WritableImage(600, 600);
         renderView.setImage(writableImage);
         this.scene = new sceneEngine(writableImage,cam1);
-        this.scene.addMesh(this.scene.createTestTriangle());
-        this.scene.addMesh(this.scene.createTestTriangle());
-        this.scene.render();
-        renderNPyramids(200);
+        testMovement();
         this.javafxScene = renderView.getScene(); //usually sets null here
         this.setMeshTriangleCountScene();
 
         AnimationTimer loop = new AnimationTimer() {
             private double fps;
             private long lastFrameTime = 0;
+            private boolean firstFrame = true;
             private final long TARGET_FRAME_TIME = 1_000_000_000L / 60; 
 
             @Override
             public void handle(long now) { //now is the current timestamp.
+                if (firstFrame) {
+                    firstFrame = false;
+                    scene.setReady(now); // pass now so lastFrameTime is set correctly
+                    return;
+                }
                 if (now - lastFrameTime < TARGET_FRAME_TIME) {
                     return; // not enough time has passed, skip this frame
                 }
@@ -80,7 +83,7 @@ public class MainPageController {
                     System.out.println(fps);
                     LiveFpsCount.setText("Fps: " + Math.round(fps));
                 }
-                scene.render();
+                scene.render(now);
             }
         };
         loop.start();
@@ -186,6 +189,9 @@ public class MainPageController {
             vector3 pos = new vector3(value1,value2,value3);
             this.scene.addMesh(meshInitialiser.createPyramid(pos));
         }
+    }
+    private void testMovement(){
+        this.scene.assignMeshStaticBody(this.scene.createTestTriangle());
     }
 
 }
