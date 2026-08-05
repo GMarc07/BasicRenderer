@@ -5,9 +5,8 @@ import com.giorgio.Engine.Collision.collisionDetection.Bounds;
 public class Mesh {
     private List<Triangle> triangles;
     private int colour = -1;
-
-
-    private vector3 position; // this is the position of the mesh in the 3d space.
+    private vector3 position;
+    public Bounds localAABB;
 
     public Mesh(List<Triangle> newMesh){
         this.triangles = newMesh;
@@ -20,9 +19,15 @@ public class Mesh {
     }
 
     public Bounds getAABB(){
+
         if (triangles == null || triangles.isEmpty()) {
             return new Bounds(position, position);
-        }   
+        } 
+        
+        if (localAABB != null){
+            return new Bounds(localAABB.min().Add(position), localAABB.max().Add(position));
+        }
+
         double minX = Double.POSITIVE_INFINITY;
         double minY = Double.POSITIVE_INFINITY;
         double minZ = Double.POSITIVE_INFINITY;
@@ -36,17 +41,18 @@ public class Mesh {
             vector3[] vertices = {triangle.getV0().position, triangle.getV1().position, triangle.getV2().position};
 
             for (vector3 v : vertices) {
-                minX = Math.min(minX, v.x+position.x);
-                minY = Math.min(minY, v.y+position.y);
-                minZ = Math.min(minZ, v.z+position.z);
+                minX = Math.min(minX, v.x);
+                minY = Math.min(minY, v.y);
+                minZ = Math.min(minZ, v.z);
 
-                maxX = Math.max(maxX, v.x+position.x);
-                maxY = Math.max(maxY, v.y+position.y);
-                maxZ = Math.max(maxZ, v.z+position.z);
+                maxX = Math.max(maxX, v.x);
+                maxY = Math.max(maxY, v.y);
+                maxZ = Math.max(maxZ, v.z);
             }
         }
 
-        return  new Bounds(new vector3(minX,minY,minZ),new vector3(maxX,maxY,maxZ));
+        localAABB =  new Bounds(new vector3(minX,minY,minZ),new vector3(maxX,maxY,maxZ));
+        return new Bounds(localAABB.min().Add(position), localAABB.max().Add(position));
 
     }
         
