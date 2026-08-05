@@ -56,7 +56,13 @@ public class MainPageController {
         writableImage = new WritableImage(600, 600);
         renderView.setImage(writableImage);
         this.scene = new sceneEngine(writableImage,cam1);
-        testMovement();
+        //testMovement();
+
+        //place object creation for the scene here
+
+        checkBroadPhaseCollision();
+
+        //
         this.javafxScene = renderView.getScene(); //usually sets null here
         this.setMeshTriangleCountScene();
 
@@ -192,6 +198,26 @@ public class MainPageController {
     }
     private void testMovement(){
         this.scene.assignMeshStaticBody(this.scene.createTestTriangle());
+    }
+
+    private void checkBroadPhaseCollision(){
+        /*vector3 p1 = new vector3(0, 0, 0);
+        vector3 p2 = new vector3(0.5, 0, 0);
+        vector3 p3 = new vector3(50, 50, 50);
+        vector3 p4 = new vector3(-50, -50, -50);
+        this.scene.createRigidBodyPyramid(p1);
+        this.scene.createRigidBodyPyramid(p2);
+        this.scene.createRigidBodyPyramid(p3);
+        this.scene.createRigidBodyPyramid(p4);*/
+
+        for (int i = 0; i < 20; i++) {
+            double value1 = -50.0 + Math.random() * 100.0;
+            double value2 = -50.0 + Math.random() * 100.0;
+            double value3 = -50.0 + Math.random() * 100.0;
+            vector3 pos = new vector3(value1,value2,value3);
+            this.scene.createRigidBodyPyramid(pos);
+        }
+        
     }
 
 }

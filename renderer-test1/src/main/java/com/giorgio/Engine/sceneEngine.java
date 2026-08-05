@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import com.giorgio.Engine.Collision.collisionDetection;
 import com.giorgio.math.*;
 import javafx.scene.image.PixelFormat;
 import java.util.Random;
@@ -17,12 +18,13 @@ public class sceneEngine {
     private int height;
     private camera setCamera;
     private List<Mesh> meshList = new ArrayList<>();
-    private List<RigidBody> rigidBodyList = new ArrayList<>();
+    private List<rigidBody> rigidBodyList = new ArrayList<>();
     private int[] pixelBuffer;
     private int[] clearBuffer;
     private double[] depthBuffer;
     private long lastFrameTime;
     private boolean ready = false;
+    private collisionDetection collisionDetector;
     Color flatColour = Color.GREEN;
 
     public sceneEngine(WritableImage imageLink, camera camera){
@@ -30,6 +32,7 @@ public class sceneEngine {
         this.width = (int) image.getWidth();
         this.height = (int) image.getHeight();
         this.setCamera = camera;
+        collisionDetector = new collisionDetection(rigidBodyList);
         pixelBuffer = new int[width * height];
         clearBuffer = new int[width * height];
         depthBuffer = new double[width * height]; 
@@ -71,7 +74,7 @@ public class sceneEngine {
         long timePassed = now - lastFrameTime;
         this.lastFrameTime = now;
         double deltaTime = timePassed / 1_000_000_000.0;
-    
+        collisionDetector.runDetection();
         for (Mesh mesh : meshList) {
             int meshColour;
             if (mesh.getColour() == -1) {
@@ -83,7 +86,7 @@ public class sceneEngine {
             renderTriangles(mesh.getTriangles(), mesh.getPosition(), meshColour, camPos);
         } 
     
-        for (RigidBody rigidBody : rigidBodyList) {
+        for (rigidBody rigidBody : rigidBodyList) {
             Mesh mesh = rigidBody.mesh;
     
             int meshColour;
@@ -96,9 +99,9 @@ public class sceneEngine {
     
             if (rigidBody.velocity != null) {
                 vector3 movement = rigidBody.velocity.scale(deltaTime);
-                movement.print();
+                //movement.print();
                 vector3 newPos = movement.Add(mesh.getPosition());
-                newPos.print();
+                //newPos.print();
                 mesh.setPosition(newPos);
             }
     
@@ -144,6 +147,12 @@ public class sceneEngine {
         meshList.add(mesh);
         return mesh;
     }
+    public rigidBody createRigidBodyPyramid(vector3 pos){
+        rigidBody newBody = new rigidBody(meshInitialiser.createPyramid(pos));
+        this.rigidBodyList.add(newBody);
+        this.updateCollisionBodyList();
+        return newBody;
+    }
 
     public static int randomColour() {
         Random random = new Random();
@@ -154,7 +163,7 @@ public class sceneEngine {
     }
 
     public void assignMeshStaticBody(Mesh mesh){
-        RigidBody newBody = new RigidBody(mesh);
+        rigidBody newBody = new rigidBody(mesh);
         meshList.remove(mesh);
         rigidBodyList.add(newBody);
 
@@ -210,5 +219,8 @@ public class sceneEngine {
                 }
             }
         }
+    }
+    private void updateCollisionBodyList(){
+        collisionDetector.updateRigidBodyList(rigidBodyList);
     }
 }
