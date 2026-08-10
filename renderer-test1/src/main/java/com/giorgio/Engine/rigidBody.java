@@ -1,15 +1,18 @@
 package com.giorgio.Engine;
 import com.giorgio.math.*;
 
-class RigidBody {
+public class rigidBody {
     Mesh mesh;
-    vector3 velocity = new vector3(0.5,0.0,0.0);
+    vector3 velocity = new vector3(0.0,0.0,0.0);
     vector3 acceleration;
     double mass;
 
-    RigidBody(Mesh newMesh){
+    rigidBody(Mesh newMesh){
         this.mesh = newMesh;
     }
 
-    
+    public Mesh getMesh(){
+        return mesh;
+    }
+
 }

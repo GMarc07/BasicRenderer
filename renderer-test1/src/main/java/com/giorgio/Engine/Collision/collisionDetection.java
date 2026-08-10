@@ -3,6 +3,7 @@ import com.giorgio.math.*;
 
 import javafx.util.Pair;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.giorgio.Engine.*;
 
@@ -11,6 +12,7 @@ public class collisionDetection{
     private List<rigidBody> rigidBodyList;
     List<Pair<rigidBody, rigidBody>> broadPhaseResult;
     List<Pair<rigidBody, rigidBody>> bruteForceResult;
+    List<rigidBody> narrowPhaseResult;
     public record Bounds(vector3 min, vector3 max) {
 
     }
@@ -53,7 +55,66 @@ public class collisionDetection{
         //RETURN candidatePairs
         return candidatePairs;
     }
+    private List<Pair<rigidBody, rigidBody>> narrowPhase(){
+        List<Pair<rigidBody, rigidBody>> latestBroadPhaseResults = this.broadPhaseResult;
+        List<Pair<rigidBody, rigidBody>> narrowresults = new ArrayList<>();
+        //need to get every axis to test from the 2 objects and go through each one and check if theres any overlap.
 
+        for(Pair<rigidBody, rigidBody> pair : latestBroadPhaseResults){
+            rigidBody objA = pair.getKey();
+            rigidBody objB = pair.getValue();
+            boolean separated = false;
+            List<vector3> axes = getAxes(objA);
+            axes.addAll(getAxes(objB));
+
+            //project both objects on these axes.
+            for (vector3 axis : axes){
+                Pair<Double,Double> minMaxObjA = projectObjectOnAxis(objA, axis);
+                Pair<Double,Double> minMaxObjB = projectObjectOnAxis(objB, axis);
+
+
+                if (!(minMaxObjA.getValue()< minMaxObjB.getKey() || minMaxObjB.getValue() < minMaxObjA.getKey())) {
+                    separated = true;
+                    break;
+                }
+            }
+            if (!separated) {
+                narrowresults.add(pair);
+            }
+        }
+        return narrowresults;
+    }
+    // loop over all the vertices, performing the dot product with the axis and storing the minimum and maximum.
+    private Pair<Double,Double> projectObjectOnAxis(rigidBody object,vector3 axis){
+        double min = Double.POSITIVE_INFINITY;
+        double max = Double.NEGATIVE_INFINITY;
+        Mesh mesh = object.getMesh();
+        for (Triangle triangle : mesh.getTriangles()){
+            List<Vertex> vertices = Arrays.asList(triangle.getV0(),triangle.getV1(),triangle.getV2());
+            for (Vertex vertex : vertices) {
+                double p = vertex.position.dotProduct(axis);
+        
+                if (p < min) min = p;
+                if (p > max) max = p;
+            }
+        }
+        return new Pair<>(min, max);
+    }
+    private List<vector3> getAxes(rigidBody body){
+
+        List<vector3> resultsList = new ArrayList<vector3>();
+        Mesh mesh = body.getMesh();
+
+        for (Triangle triangle : mesh.getTriangles()){
+            vector3 v0 = triangle.getV0().position;
+            vector3 v1 = triangle.getV1().position;
+
+            vector3 normal = generalEquations.cross(v0,v1);
+            resultsList.add(normal);
+
+        }
+        return resultsList;
+    }
     private Bounds computeWorldBounds(List<rigidBody> rigidBodies){
         double minX = 0.0;
         double maxX = 0.0;

@@ -7,11 +7,11 @@ public class generalEquations {
         double rz = vector.z * a;
         return new vector3(rx, ry, rz);
     }
-    public vector3 normalise(vector3 vector){
+    public static vector3 normalise(vector3 vector){
         double sum = vector.x + vector.y +vector.z;
         return new vector3(vector.x/sum,vector.y/sum,vector.z/sum);
     }
-    public vector3 cross(vector3 vector,vector3 other){        
+    public static vector3 cross(vector3 vector,vector3 other){        
         // i 
         double res1 =( vector.y * other.z ) - (other.y * vector.z);
         // j 
