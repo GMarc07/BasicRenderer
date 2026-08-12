@@ -12,7 +12,7 @@ public class collisionDetection{
     private List<rigidBody> rigidBodyList;
     List<Pair<rigidBody, rigidBody>> broadPhaseResult;
     List<Pair<rigidBody, rigidBody>> bruteForceResult;
-    List<rigidBody> narrowPhaseResult;
+    List<Pair<rigidBody, rigidBody>> narrowPhaseResult;
     public record Bounds(vector3 min, vector3 max) {
 
     }
@@ -23,10 +23,9 @@ public class collisionDetection{
     }
     public void runDetection(){
         this.broadPhaseResult =  this.broadPhase();
-        System.out.println("OCTREE RESULT");
-        System.out.println(broadPhaseResult);
-        System.out.println("BRUTE FORCE RESULT");
-        System.out.println(bruteForceResult);
+        System.out.println("Detected " + broadPhaseResult.size()+" possible collisions");
+        this.narrowPhaseResult = narrowPhase();
+        System.out.println("Detected " + narrowPhaseResult.size() + " collisions");
     }
 
     //Broad Phase
@@ -71,9 +70,11 @@ public class collisionDetection{
             for (vector3 axis : axes){
                 Pair<Double,Double> minMaxObjA = projectObjectOnAxis(objA, axis);
                 Pair<Double,Double> minMaxObjB = projectObjectOnAxis(objB, axis);
-
-
-                if (!(minMaxObjA.getValue()< minMaxObjB.getKey() || minMaxObjB.getValue() < minMaxObjA.getKey())) {
+            
+                boolean overlapsOnThisAxis = !(minMaxObjA.getValue() < minMaxObjB.getKey()|| minMaxObjB.getValue() < minMaxObjA.getKey());
+            
+                if (!overlapsOnThisAxis) {
+                    // found a separating axis -> definitely not colliding
                     separated = true;
                     break;
                 }
@@ -89,10 +90,11 @@ public class collisionDetection{
         double min = Double.POSITIVE_INFINITY;
         double max = Double.NEGATIVE_INFINITY;
         Mesh mesh = object.getMesh();
+        vector3 meshPos = mesh.getPosition();
         for (Triangle triangle : mesh.getTriangles()){
             List<Vertex> vertices = Arrays.asList(triangle.getV0(),triangle.getV1(),triangle.getV2());
             for (Vertex vertex : vertices) {
-                double p = vertex.position.dotProduct(axis);
+                double p = vertex.position.Add(meshPos).dotProduct(axis);
         
                 if (p < min) min = p;
                 if (p > max) max = p;
@@ -108,8 +110,9 @@ public class collisionDetection{
         for (Triangle triangle : mesh.getTriangles()){
             vector3 v0 = triangle.getV0().position;
             vector3 v1 = triangle.getV1().position;
+            vector3 v2 = triangle.getV2().position;
 
-            vector3 normal = generalEquations.cross(v0,v1);
+            vector3 normal = generalEquations.cross(v1.subtract(v0), v2.subtract(v0));
             resultsList.add(normal);
 
         }
