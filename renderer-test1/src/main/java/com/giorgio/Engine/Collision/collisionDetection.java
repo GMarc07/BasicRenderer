@@ -116,34 +116,22 @@ public class collisionDetection{
         return resultsList;
     }
     private Bounds computeWorldBounds(List<rigidBody> rigidBodies){
-        double minX = 0.0;
-        double maxX = 0.0;
-        double minY = 0.0;
-        double maxY = 0.0;
-        double minZ = 0.0;
-        double maxZ = 0.0;
-        for (rigidBody rigidBody : rigidBodies){
-            vector3 pos = rigidBody.getMesh().getPosition();
-            if (pos.x < minX){
-                minX = pos.x;
-            }
-            if (pos.x > maxX){
-                maxX = pos.x;
-            }
-            if (pos.y < minY){
-                minY = pos.y;
-            }
-            if (pos.y > maxY){
-                maxY = pos.y;
-            }
-            if (pos.z < minZ){
-                minZ = pos.z;
-            }
-            if (pos.z > maxZ){
-                maxZ = pos.z;
-            }
-        
-        } 
+        double minX = Double.POSITIVE_INFINITY, maxX = Double.NEGATIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY;
+        double minZ = Double.POSITIVE_INFINITY, maxZ = Double.NEGATIVE_INFINITY;
+
+        for (rigidBody rigidBody : rigidBodies) {
+            Bounds bodyAABB = rigidBody.getMesh().getAABB();
+
+            if (bodyAABB.min().x < minX) minX = bodyAABB.min().x;
+            if (bodyAABB.max().x > maxX) maxX = bodyAABB.max().x;
+
+            if (bodyAABB.min().y < minY) minY = bodyAABB.min().y;
+            if (bodyAABB.max().y > maxY) maxY = bodyAABB.max().y;
+
+            if (bodyAABB.min().z < minZ) minZ = bodyAABB.min().z;
+            if (bodyAABB.max().z > maxZ) maxZ = bodyAABB.max().z;
+        }
 
         vector3 min = new vector3(minX, minY, minZ);
         vector3 max = new vector3(maxX, maxY, maxZ);
