@@ -60,7 +60,8 @@ public class MainPageController {
 
         //place object creation for the scene here
 
-        checkBroadPhaseCollision();
+        //checkBroadPhaseCollision();
+        renderNRigidBodies(10000);
 
         //
         this.javafxScene = renderView.getScene(); //usually sets null here
@@ -186,6 +187,16 @@ public class MainPageController {
         statusLabelTriangleCount.setText("Triangles: " + res.get(1));
     }
 
+
+    private void renderNRigidBodies(Integer num){
+        for (int i = 0; i < num; i++) {
+            double value1 = -50.0 + Math.random() * 1000.0;
+            double value2 = -50.0 + Math.random() * 1000.0;
+            double value3 = -50.0 + Math.random() * 1000.0;
+            vector3 pos = new vector3(value1,value2,value3);
+            this.scene.createRigidBodyPyramid(pos);
+        } 
+    }
     private void renderNPyramids(Integer num){
         for (int i = 0; i < num; i++) {
 
@@ -198,26 +209,27 @@ public class MainPageController {
     }
     private void testMovement(){
         this.scene.assignMeshStaticBody(this.scene.createTestTriangle());
+        //add velocity to the triangle.
     }
 
     private void checkBroadPhaseCollision(){
-        /*vector3 p1 = new vector3(0, 0, 0);
+        vector3 p1 = new vector3(0, 0, 0);
         vector3 p2 = new vector3(0.5, 0, 0);
         vector3 p3 = new vector3(50, 50, 50);
         vector3 p4 = new vector3(-50, -50, -50);
         this.scene.createRigidBodyPyramid(p1);
         this.scene.createRigidBodyPyramid(p2);
         this.scene.createRigidBodyPyramid(p3);
-        this.scene.createRigidBodyPyramid(p4);*/
+        this.scene.createRigidBodyPyramid(p4);
 
-        for (int i = 0; i < 20; i++) {
+        /*for (int i = 0; i < 20; i++) {
             double value1 = -50.0 + Math.random() * 100.0;
             double value2 = -50.0 + Math.random() * 100.0;
             double value3 = -50.0 + Math.random() * 100.0;
             vector3 pos = new vector3(value1,value2,value3);
             this.scene.createRigidBodyPyramid(pos);
         }
-        
+        */
     }
 
 }
