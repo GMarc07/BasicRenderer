@@ -16,6 +16,7 @@ public class collisionDetection{
     List<Pair<rigidBody, rigidBody>> broadPhaseResult;
     List<Pair<rigidBody, rigidBody>> bruteForceResult;
     List<Pair<rigidBody, rigidBody>> narrowPhaseResult;
+    public Integer collisionCount;
     public record Bounds(vector3 min, vector3 max) {
 
     }
@@ -26,9 +27,10 @@ public class collisionDetection{
     }
     public void runDetection(){
         this.broadPhaseResult =  this.broadPhase();
-        System.out.println("Detected " + broadPhaseResult.size()+" possible collisions");
+        //System.out.println("Detected " + broadPhaseResult.size()+" possible collisions");
         this.narrowPhaseResult = narrowPhase();
-        System.out.println("Detected " + narrowPhaseResult.size() + " collisions");
+        collisionCount = narrowPhaseResult.size();
+        //System.out.println("Detected " + narrowPhaseResult.size() + " collisions");
     }
 
     //Broad Phase

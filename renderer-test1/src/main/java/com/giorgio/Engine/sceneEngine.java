@@ -224,6 +224,15 @@ public class sceneEngine {
             }
         }
     }
+    
+    public Integer getCollisionCount(){
+        if(collisionDetector == null){
+            return 0;
+        }
+        else{
+            return collisionDetector.collisionCount;
+        }
+    }
     private void updateCollisionBodyList(){
         collisionDetector.updateRigidBodyList(rigidBodyList);
     }

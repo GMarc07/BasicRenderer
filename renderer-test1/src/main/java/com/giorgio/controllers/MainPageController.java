@@ -27,6 +27,8 @@ public class MainPageController {
     private Label LiveFpsCount;
     @FXML
     private Label currentCamCordsLabel;
+    @FXML
+    private Label currentCollisionsCountLabel;
 
     private WritableImage writableImage;
     private sceneEngine scene;
@@ -63,7 +65,6 @@ public class MainPageController {
         //checkBroadPhaseCollision();
         renderNRigidBodies(10000);
 
-        //
         this.javafxScene = renderView.getScene(); //usually sets null here
         this.setMeshTriangleCountScene();
 
@@ -91,6 +92,7 @@ public class MainPageController {
                     LiveFpsCount.setText("Fps: " + Math.round(fps));
                 }
                 scene.render(now);
+                currentCollisionsCountLabel.setText("Collisions: " + scene.getCollisionCount());
             }
         };
         loop.start();
@@ -154,27 +156,6 @@ public class MainPageController {
             adjustCamCords();
         }
     }
-    private double calculateFps(long now) {
-        frameCount++;
-    
-        if (lastFpsUpdate == 0) {
-            lastFpsUpdate = now;
-            return 0;
-        }
-    
-        long elapsed = now - lastFpsUpdate;
-    
-        if (elapsed >= 1_000_000_000L) {
-            double fps = frameCount / (elapsed / 1_000_000_000.0);
-    
-            frameCount = 0;
-            lastFpsUpdate = now;
-    
-            return fps;
-        }
-    
-        return -1;
-    }
     @FXML
     private void backToMain(){
         System.out.println("Button pressed succesfully");
@@ -230,6 +211,28 @@ public class MainPageController {
             this.scene.createRigidBodyPyramid(pos);
         }
         */
+    }
+
+    private double calculateFps(long now) {
+        frameCount++;
+    
+        if (lastFpsUpdate == 0) {
+            lastFpsUpdate = now;
+            return 0;
+        }
+    
+        long elapsed = now - lastFpsUpdate;
+    
+        if (elapsed >= 1_000_000_000L) {
+            double fps = frameCount / (elapsed / 1_000_000_000.0);
+    
+            frameCount = 0;
+            lastFpsUpdate = now;
+    
+            return fps;
+        }
+    
+        return -1;
     }
 
 }
