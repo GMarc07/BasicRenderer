@@ -57,10 +57,13 @@ public class sceneEngine {
     }
 
     public List<Double> getMeshAndTriangleCount() { 
-        double meshCount = meshList.size();
+        double meshCount = meshList.size() + rigidBodyList.size();
         double triangleCount = 0;
         for (Mesh mesh : meshList) {
            triangleCount += mesh.getTriangles().size();
+        }
+        for (rigidBody rigidBody : rigidBodyList){
+            triangleCount += rigidBody.getMesh().getTriangles().size();
         }
         return Arrays.asList(meshCount, triangleCount);
 
@@ -75,6 +78,7 @@ public class sceneEngine {
         this.lastFrameTime = now;
         double deltaTime = timePassed / 1_000_000_000.0;
         collisionDetector.runDetection();
+
         for (Mesh mesh : meshList) {
             int meshColour;
             if (mesh.getColour() == -1) {
