@@ -5,6 +5,9 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import com.giorgio.Engine.*;
 
 public class collisionDetection{
@@ -41,49 +44,60 @@ public class collisionDetection{
         // ---- Step 2: Build the octree fresh ----
         Octree octree = new Octree(worldBounds);
 
-        for (rigidBody rigidBody : rigidBodyList){
-            Bounds boundMesh = rigidBody.getMesh().getAABB();
-            octree.insert(rigidBody,boundMesh);
+        int size = rigidBodyList.size();
+
+        Bounds[] buffer = new Bounds[size];
+
+        IntStream.range(0,size).parallel().forEach(i ->{
+            Bounds boundMesh = rigidBodyList.get(i).getMesh().getAABB();
+            buffer[i] = boundMesh;
+        });
+        
+        for (int i = 0; i < size; i++){
+            octree.insert(rigidBodyList.get(i), buffer[i]);
         }
 
-        // ---- Step 3: Traverse tree, collect candidate pairs ----
+        // Step 3: Traverse tree, collect candidate pairs 
   
         List<Pair<rigidBody, rigidBody>> candidatePairs = octree.getPotentialCollisions();
-        bruteForceResult = octree.bruteForce();
-        // ---- Step 4: Return pairs for narrow phase to check ----
-        //RETURN candidatePairs
+        //bruteForceResult = octree.bruteForce();
+
         return candidatePairs;
     }
-    private List<Pair<rigidBody, rigidBody>> narrowPhase(){
-        List<Pair<rigidBody, rigidBody>> latestBroadPhaseResults = this.broadPhaseResult;
-        List<Pair<rigidBody, rigidBody>> narrowresults = new ArrayList<>();
-        //need to get every axis to test from the 2 objects and go through each one and check if theres any overlap.
-
-        for(Pair<rigidBody, rigidBody> pair : latestBroadPhaseResults){
-            rigidBody objA = pair.getKey();
-            rigidBody objB = pair.getValue();
-            boolean separated = false;
-            List<vector3> axes = getAxes(objA);
-            axes.addAll(getAxes(objB));
-
-            //project both objects on these axes.
-            for (vector3 axis : axes){
-                Pair<Double,Double> minMaxObjA = projectObjectOnAxis(objA, axis);
-                Pair<Double,Double> minMaxObjB = projectObjectOnAxis(objB, axis);
-            
-                boolean overlapsOnThisAxis = !(minMaxObjA.getValue() < minMaxObjB.getKey()|| minMaxObjB.getValue() < minMaxObjA.getKey());
-            
-                if (!overlapsOnThisAxis) {
-                    // found a separating axis -> definitely not colliding
-                    separated = true;
-                    break;
+    private List<Pair<rigidBody, rigidBody>> narrowPhase() {
+        return this.broadPhaseResult.parallelStream()
+            .filter(pair -> {
+                rigidBody objA = pair.getKey();
+                rigidBody objB = pair.getValue();
+    
+                // 1. Check axes from objA
+                if (hasSeparatingAxis(objA, objB, getAxes(objA))) {
+                    return false; // Separated, exclude from results
                 }
-            }
-            if (!separated) {
-                narrowresults.add(pair);
+    
+                // 2. Check axes from objB
+                if (hasSeparatingAxis(objA, objB, getAxes(objB))) {
+                    return false; // Separated, exclude from results
+                }
+    
+                return true; // Overlaps on all axes therefore colliding
+            })
+            .collect(Collectors.toList());
+    }
+
+    private boolean hasSeparatingAxis(rigidBody objA, rigidBody objB, List<vector3> axes) {
+        for (vector3 axis : axes) {
+            Pair<Double, Double> minMaxObjA = projectObjectOnAxis(objA, axis);
+            Pair<Double, Double> minMaxObjB = projectObjectOnAxis(objB, axis);
+    
+            boolean overlaps = !(minMaxObjA.getValue() < minMaxObjB.getKey() 
+                               || minMaxObjB.getValue() < minMaxObjA.getKey());
+    
+            if (!overlaps) {
+                return true; // Found a separating axis
             }
         }
-        return narrowresults;
+        return false;
     }
     // loop over all the vertices, performing the dot product with the axis and storing the minimum and maximum.
     private Pair<Double,Double> projectObjectOnAxis(rigidBody object,vector3 axis){
