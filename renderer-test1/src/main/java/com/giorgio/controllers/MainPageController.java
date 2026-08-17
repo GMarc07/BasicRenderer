@@ -30,6 +30,7 @@ public class MainPageController {
     @FXML
     private Label currentCollisionsCountLabel;
 
+    private boolean frameCap = false;
     private WritableImage writableImage;
     private sceneEngine scene;
     private long lastFpsUpdate = 0;
@@ -58,12 +59,11 @@ public class MainPageController {
         writableImage = new WritableImage(600, 600);
         renderView.setImage(writableImage);
         this.scene = new sceneEngine(writableImage,cam1);
-        //testMovement();
 
         //place object creation for the scene here
 
-        //checkBroadPhaseCollision();
-        renderNRigidBodies(10000);
+        renderNPyramids(100);
+        //renderNRigidBodies(100);
 
         this.javafxScene = renderView.getScene(); //usually sets null here
         this.setMeshTriangleCountScene();
@@ -81,9 +81,11 @@ public class MainPageController {
                     scene.setReady(now); // pass now so lastFrameTime is set correctly
                     return;
                 }
-                if (now - lastFrameTime < TARGET_FRAME_TIME) {
+                if (true){
+                    if (now - lastFrameTime < TARGET_FRAME_TIME) {
                     return; // not enough time has passed, skip this frame
-                }
+                    }
+                }   
                 lastFrameTime = now;
                 fps = calculateFps(now);
                 checkKeyboardPresses();
@@ -179,11 +181,12 @@ public class MainPageController {
         } 
     }
     private void renderNPyramids(Integer num){
-        for (int i = 0; i < num; i++) {
+        this.scene.addMesh(meshInitialiser.createPyramid(new vector3(0.0,0.0,0.0)));
+        for (int i = 0; i < num-1; i++) {
 
-            double value1 = -50.0 + Math.random() * 1000.0;
-            double value2 = -50.0 + Math.random() * 1000.0;
-            double value3 = -50.0 + Math.random() * 1000.0;
+            double value1 = -50.0 + Math.random() * 100.0;
+            double value2 = -50.0 + Math.random() * 100.0;
+            double value3 = -50.0 + Math.random() * 100.0;
             vector3 pos = new vector3(value1,value2,value3);
             this.scene.addMesh(meshInitialiser.createPyramid(pos));
         }

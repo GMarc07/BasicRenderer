@@ -176,6 +176,7 @@ public class Octree {
         }
     }
 
+    //should be only used for debugging
     public List<Pair<rigidBody, rigidBody>> bruteForce(){
         List<Pair<rigidBody, rigidBody>> bruteForce = new ArrayList<>();
 
