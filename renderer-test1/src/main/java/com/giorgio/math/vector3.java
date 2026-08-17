@@ -78,4 +78,14 @@ public class vector3 {
         double z =  v.y * Math.sin(pitch) + v.z * Math.cos(pitch);
         return new vector3(x, y, z);
     }
+    public static vector3 applyPitchYaw(vector3 v, double sinYaw, double cosYaw, double sinPitch, double cosPitch) {
+        double x =  v.x * cosYaw + v.z * sinYaw;
+        double y =  v.y;
+        double z = -v.x * sinYaw + v.z * cosYaw;
+    
+        double x1 =  x;
+        double y1 =  y * cosPitch - z * sinPitch;
+        double z1 =  y * sinPitch + z * cosPitch;
+        return new vector3(x1, y1, z1);
+    }
 }
