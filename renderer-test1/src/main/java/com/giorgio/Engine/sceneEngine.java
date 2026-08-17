@@ -25,6 +25,13 @@ public class sceneEngine {
     private long lastFrameTime;
     private boolean ready = false;
     private collisionDetection collisionDetector;
+
+    private double tempYaw;
+    private double tempPitch;
+    private double tempSinYaw;
+    private double tempCosYaw;
+    private double tempSinPitch;
+    private double tempCosPitch;
     Color flatColour = Color.GREEN;
 
     public sceneEngine(WritableImage imageLink, camera camera){
@@ -79,11 +86,19 @@ public class sceneEngine {
         double deltaTime = timePassed / 1_000_000_000.0;
         collisionDetector.runDetection();
 
+        tempYaw = setCamera.getYaw();
+        tempPitch = setCamera.getPitch();
+        tempSinYaw = Math.sin(tempYaw);
+        tempCosYaw = Math.cos(tempYaw);
+        tempSinPitch = Math.sin(tempPitch);
+        tempCosPitch = Math.cos(tempPitch);   
+
+
         for (Mesh mesh : meshList) {
             int meshColour;
             if (mesh.getColour() == -1) {
-                meshColour = randomColour();
-                mesh.setColour(meshColour);
+                meshColour = 0;
+                mesh.setColour(0);
             } else {
                 meshColour = mesh.getColour();
             }
@@ -174,6 +189,7 @@ public class sceneEngine {
     }
     private void renderTriangles(List<Triangle> triangles, vector3 meshPos, int colour, vector3 camPos) {
         double fov = 300;
+        
         for (Triangle triangle : triangles) {
             vector3 worldV0 = triangle.getV0().position.Add(meshPos);
             vector3 worldV1 = triangle.getV1().position.Add(meshPos);
@@ -182,10 +198,10 @@ public class sceneEngine {
             vector3 newPosV0 = worldV0.subtract(camPos);
             vector3 newPosV1 = worldV1.subtract(camPos);
             vector3 newPosV2 = worldV2.subtract(camPos);
-    
-            vector3 camV0 = vector3.applyPitch(vector3.applyYaw(newPosV0, setCamera.getYaw()), setCamera.getPitch());
-            vector3 camV1 = vector3.applyPitch(vector3.applyYaw(newPosV1, setCamera.getYaw()), setCamera.getPitch());
-            vector3 camV2 = vector3.applyPitch(vector3.applyYaw(newPosV2, setCamera.getYaw()), setCamera.getPitch());
+
+            vector3 camV0 = vector3.applyPitchYaw(newPosV0, tempSinYaw, tempCosYaw, tempSinPitch, tempCosPitch);
+            vector3 camV1 = vector3.applyPitchYaw(newPosV1, tempSinYaw, tempCosYaw, tempSinPitch, tempCosPitch);
+            vector3 camV2 = vector3.applyPitchYaw(newPosV2, tempSinYaw, tempCosYaw, tempSinPitch, tempCosPitch);
     
             if (camV0.z <= 0 || camV1.z <= 0 || camV2.z <= 0) continue;
     
