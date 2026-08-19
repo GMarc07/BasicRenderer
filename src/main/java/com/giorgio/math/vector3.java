@@ -1,0 +1,91 @@
+package com.giorgio.math;
+
+public class vector3 {
+    final public double x,y,z;
+
+    public vector3(double x,double y, double z){
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+    public vector3(){
+        this.x = 0.0;
+        this.y = 0.0;
+        this.z = 0.0;
+    }
+    public void print(){
+        System.out.println("Vector3: " + this.x + " " + this.y + " " + this.z);
+    }
+
+    public vector3 Add(vector3 otherVector){
+        double rx = this.x + otherVector.x;
+        double ry = this.y + otherVector.y;
+        double rz = this.z + otherVector.z;
+
+        vector3 returnVector = new vector3(rx,ry,rz);
+        return returnVector;
+    }
+    public vector3 subtract(vector3 other) {
+        double rx = this.x - other.x;
+        double ry = this.y - other.y;
+        double rz = this.z - other.z;
+        return new vector3(rx, ry, rz);
+    }
+    public vector3 Multiply(vector3 otherVector){
+        double rx = this.x * otherVector.x;
+        double ry = this.y * otherVector.y;
+        double rz = this.z * otherVector.z;
+
+        vector3 returnVector = new vector3(rx,ry,rz);
+        return returnVector;
+    }
+    public double dotProduct(vector3 otherVector){
+        double px = this.x * otherVector.x;
+        double py = this.y * otherVector.y;
+        double pz = this.z * otherVector.z;
+
+        double num = px + py + pz;
+        return num;
+    }
+    public vector3 scale(double a){
+        double rx = this.x * a;
+        double ry = this.y * a;
+        double rz = this.z * a;
+        return new vector3(rx, ry, rz);
+    }
+    public vector3 normalise(){
+        double sum = Math.sqrt(this.x*this.x + this.y*this.y +this.z*this.z);
+        return new vector3(this.x/sum,this.y/sum,this.z/sum);
+    }
+    public vector3 cross(vector3 other){        
+        // i 
+        double res1 =( this.y * other.z ) - (other.y * this.z);
+        // j 
+        double res2 = -1*((this.x * other.z)-(other.x*this.z));
+        //k 
+        double res3 = ((this.x *other.y)-(other.x*this.y));
+        return new vector3(res1,res2,res3);
+    }
+    public static vector3 applyYaw(vector3 v, double yaw) {
+        double x =  v.x * Math.cos(yaw) + v.z * Math.sin(yaw);
+        double y =  v.y;
+        double z = -v.x * Math.sin(yaw) + v.z * Math.cos(yaw);
+        return new vector3(x, y, z);
+    }
+    public static vector3 applyPitch(vector3 v, double pitch) {
+        double x =  v.x;
+        double y =  v.y * Math.cos(pitch) - v.z * Math.sin(pitch);
+        double z =  v.y * Math.sin(pitch) + v.z * Math.cos(pitch);
+        return new vector3(x, y, z);
+    }
+    public static vector3 applyPitchYaw(vector3 v, double sinYaw, double cosYaw, double sinPitch, double cosPitch) {
+        double x =  v.x * cosYaw + v.z * sinYaw;
+        double y =  v.y;
+        double z = -v.x * sinYaw + v.z * cosYaw;
+    
+        double x1 =  x;
+        double y1 =  y * cosPitch - z * sinPitch;
+        double z1 =  y * sinPitch + z * cosPitch;
+        return new vector3(x1, y1, z1);
+    }
+}
