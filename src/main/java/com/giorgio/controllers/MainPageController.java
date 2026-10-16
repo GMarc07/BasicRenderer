@@ -3,6 +3,7 @@ import javafx.scene.control.Label;
 import java.util.HashSet;
 import java.util.List;
 import com.giorgio.Engine.*;
+import com.giorgio.math.Mesh;
 import com.giorgio.math.vector3;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -12,6 +13,11 @@ import javafx.scene.image.WritableImage;
 import javafx.animation.AnimationTimer;
 import javafx.scene.input.KeyCode;
 import java.util.Set;
+import java.nio.file.Path;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import java.io.File;
+import java.io.IOException;
 
 public class MainPageController {
 
@@ -29,9 +35,12 @@ public class MainPageController {
     private Label currentCamCordsLabel;
     @FXML
     private Label currentCollisionsCountLabel;
+    @FXML
+    private Button importObject;
 
-    private boolean frameCap = false;
+    private boolean frameCap = true;
     private WritableImage writableImage;
+    private Path objectPath;
     private sceneEngine scene;
     private long lastFpsUpdate = 0;
     private int frameCount = 0;
@@ -62,7 +71,7 @@ public class MainPageController {
 
         //place object creation for the scene here
 
-        renderNPyramids(400000);
+        //renderNPyramids(400000);
 
         this.javafxScene = renderView.getScene(); //usually sets null here
         this.setMeshTriangleCountScene();
@@ -167,6 +176,33 @@ public class MainPageController {
         List<Double> res = this.scene.getMeshAndTriangleCount();
         statusLabelMeshCount.setText("Meshes: " + res.get(0));
         statusLabelTriangleCount.setText("Triangles: " + res.get(1));
+    }
+
+    @FXML
+    public void importObject(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select a 3D Model");
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("OBJ Files", "*.obj")
+        );
+
+        File selectedFile = fileChooser.showOpenDialog(importObject.getScene().getWindow());
+
+        if (selectedFile != null) {
+            System.out.println(selectedFile.getAbsolutePath());
+            objectPath = selectedFile.toPath();
+            objLoader objLoader = new objLoader();
+            objLoader.setModelPath(objectPath);
+
+            try {
+                //should initialise at 0,0,0
+                Mesh importedMesh = objLoader.createMeshFromFile();
+                this.scene.addMesh(importedMesh);
+            } catch (IOException e) {
+                return;
+            }
+
+        }
     }
 
 

@@ -46,6 +46,15 @@
                    layoutY="20.0"
                    text="Collisions: "
                    style="-fx-font-size: 16px;" />
+            <Button fx:id="importObject" text="Import Object" onAction="#importObject"
+                  style="-fx-background-color: black;
+                        -fx-border-color: #DDDDDA;
+                        -fx-border-radius: 8;
+                        -fx-background-radius: 8;
+                        -fx-padding: 6 14 6 14;
+                        -fx-font-size: 13;
+                        -fx-cursor: hand;" />
+            
             
       </VBox>
 
