@@ -1,5 +1,6 @@
 package com.giorgio.Engine;
 
+import com.giorgio.math.generalEquations;
 import com.giorgio.math.vector3;
 
 public class camera {
@@ -22,7 +23,7 @@ public class camera {
         );
     }
     public double getYaw() {
-        return Math.atan2(camDirection.z, camDirection.x);
+        return Math.atan2(camDirection.x, camDirection.z);
     }
 
     public void rotateCamera(double yawDelta, double pitchDelta) {
@@ -32,9 +33,9 @@ public class camera {
         newPitch = Math.max(-Math.PI / 2 + 0.01, Math.min(Math.PI / 2 - 0.01, newPitch));
     
         // reconstruct direction vector from angles
-        double x = Math.cos(newPitch) * Math.cos(newYaw);
+        double x = Math.cos(newPitch) * Math.sin(newYaw);
         double y = Math.sin(newPitch);
-        double z = Math.cos(newPitch) * Math.sin(newYaw);
+        double z = Math.cos(newPitch) * Math.cos(newYaw);
     
         this.setCamDirection(new vector3(x, y, z));
     }
@@ -50,5 +51,54 @@ public class camera {
     }
     public vector3 getCamDirection(){
         return this.camDirection;
+    }
+
+    public vector3 findUpVector(){
+        vector3 worldUp = new vector3(0.0,1.0,0.0);
+
+        vector3 right = generalEquations.normalise(generalEquations.cross(worldUp, this.camDirection));
+        vector3 up = generalEquations.cross(right,this.camDirection);
+        up = generalEquations.normalise(up);
+
+        return up;
+    }
+    public vector3 findForwardVector() {
+        return generalEquations.normalise(this.camDirection);
+    }
+    
+    public vector3 findBackwardVector() {
+        vector3 forward = findForwardVector();
+    
+        return new vector3(
+            -forward.x,
+            -forward.y,
+            -forward.z
+        );
+    }
+    public vector3 findDownVector() {
+        vector3 up = findUpVector();
+    
+        return new vector3(
+            -up.x,
+            -up.y,
+            -up.z
+        );
+    }
+    public vector3 findRightVector() {
+        vector3 worldUp = new vector3(0.0, 1.0, 0.0);
+    
+        return generalEquations.normalise(
+            generalEquations.cross(worldUp, this.camDirection)
+        );
+    }
+    
+    public vector3 findLeftVector() {
+        vector3 right = findRightVector();
+    
+        return new vector3(
+            -right.x,
+            -right.y,
+            -right.z
+        );
     }
 }

@@ -43,7 +43,6 @@ public class collisionDetection{
         // by scanning all rigidBodies once and taking the min/max extents.
         Bounds worldBounds = computeWorldBounds(rigidBodyList);   
 
-        // ---- Step 2: Build the octree fresh ----
         Octree octree = new Octree(worldBounds);
 
         int size = rigidBodyList.size();
@@ -59,10 +58,10 @@ public class collisionDetection{
             octree.insert(rigidBodyList.get(i), buffer[i]);
         }
 
-        // Step 3: Traverse tree, collect candidate pairs 
+        //  Traverse tree, collect candidate pairs 
   
         List<Pair<rigidBody, rigidBody>> candidatePairs = octree.getPotentialCollisions();
-        //bruteForceResult = octree.bruteForce();
+        //bruteForceResult = octree.bruteForce(); Uncomment to compare with brute force result.
 
         return candidatePairs;
     }

@@ -8,6 +8,19 @@ To run the application, execute the following command from the project's root di
 mvn javafx:run
 ```
 
+Camera Controls; (Changeable in MainPageController.java)
+W; Up
+S; Down
+A; Left
+D; Right
+E; Forwards
+Q; Backwards
+R; Reset to starting angles and position
+U; Rotate Up
+J; Rotate Down
+H; Rotate Left
+K; Rotate Right
+
 ## Importing OBJ Files
 
 OBJ file importing currently has the following limitations:

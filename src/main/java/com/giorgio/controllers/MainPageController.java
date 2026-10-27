@@ -61,17 +61,18 @@ public class MainPageController {
         KeyCode.K //Yaw right
     )
     );
-
+    private vector3 initCamDir = new vector3(0.0,0.0,1.0);
+    private vector3 initCamPos = new vector3(0.0,0.0,0.0);
     @FXML
     public void initialize() {
-        camera cam1 = new camera(new vector3(0.0,0.0,0.0),new vector3(0.0,0.0,0.0));
+        camera cam1 = new camera(initCamPos,initCamDir);
         writableImage = new WritableImage(600, 600);
         renderView.setImage(writableImage);
         this.scene = new sceneEngine(writableImage,cam1);
 
         //place object creation for the scene here
 
-        //renderNPyramids(400000);
+        this.scene.addMesh(meshInitialiser.createPyramid(new vector3(0.0,0.0,10.0)));
 
         this.javafxScene = renderView.getScene(); //usually sets null here
         this.setMeshTriangleCountScene();
@@ -109,25 +110,36 @@ public class MainPageController {
     }
     private void adjustCamCords(){
         vector3 currentCords = this.scene.getCamCords();
+        vector3 currentDirection = this.scene.getCamera().getCamDirection();
+        currentDirection.print();
         double adjustPitch = 0.0;
         double adjustYaw = 0.0;
+
+
         if (keysPressed.contains(KeyCode.W)) {
-            currentCords = currentCords.Add(new vector3(0.0, 0.5, 0.0));
+            //Where its currently facing, + add more to it?
+            vector3 movement = this.scene.getCamera().findDownVector();
+            currentCords = currentCords.Add(movement);
         }
         if (keysPressed.contains(KeyCode.S)) {
-            currentCords = currentCords.Add(new vector3(0.0, -0.5, 0.0));
+            vector3 movement = this.scene.getCamera().findUpVector();
+            currentCords = currentCords.Add(movement);
         }
         if (keysPressed.contains(KeyCode.A)) {
-            currentCords = currentCords.Add(new vector3(-0.5, 0.0, 0.0));
+            vector3 movement = this.scene.getCamera().findLeftVector();
+            currentCords = currentCords.Add(movement);
         }
         if (keysPressed.contains(KeyCode.D)) {
-            currentCords = currentCords.Add(new vector3(0.5, 0.0, 0.0));
+            vector3 movement = this.scene.getCamera().findRightVector();
+            currentCords = currentCords.Add(movement);
         }
         if (keysPressed.contains(KeyCode.E)) {
-            currentCords = currentCords.Add(new vector3(0.0, 0.0, 0.5));
+            vector3 movement = this.scene.getCamera().findForwardVector();
+            currentCords = currentCords.Add(movement);
         }
         if (keysPressed.contains(KeyCode.Q)) {
-            currentCords = currentCords.Add(new vector3(0.0, 0.0, -0.5));
+            vector3 movement = this.scene.getCamera().findBackwardVector();
+            currentCords = currentCords.Add(movement);
         }
         if (keysPressed.contains(KeyCode.U)){
             adjustPitch += 0.02;
@@ -142,8 +154,8 @@ public class MainPageController {
             adjustYaw -= 0.03;
         }
         if (keysPressed.contains(KeyCode.R)){
-            currentCords = new vector3(0.0,0.0,0.0);
-            this.scene.getCamera().setCamDirection(new vector3(0.0,0.0,0.0));
+            currentCords = initCamPos;
+            this.scene.getCamera().setCamDirection(initCamDir);
         }
     
         this.scene.getCamera().rotateCamera(adjustYaw,adjustPitch);
@@ -219,9 +231,9 @@ public class MainPageController {
         this.scene.addMesh(meshInitialiser.createPyramid(new vector3(0.0,0.0,0.0)));
         for (int i = 0; i < num-1; i++) {
 
-            double value1 = -50.0 + Math.random() * 1000.0;
-            double value2 = -50.0 + Math.random() * 1000.0;
-            double value3 = -50.0 + Math.random() * 1000.0;
+            double value1 = 0 + Math.random() * 10.0;
+            double value2 = 0 + Math.random() * 10.0;
+            double value3 = 0 + Math.random() * 10.0;
             vector3 pos = new vector3(value1,value2,value3);
             this.scene.addMesh(meshInitialiser.createPyramid(pos));
         }
