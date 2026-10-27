@@ -8,8 +8,12 @@ public class generalEquations {
         return new vector3(rx, ry, rz);
     }
     public static vector3 normalise(vector3 vector){
-        double sum = vector.x + vector.y +vector.z;
-        return new vector3(vector.x/sum,vector.y/sum,vector.z/sum);
+        double magnitude = (vector.x *vector.x) + (vector.y*vector.y) +(vector.z*vector.z);
+        magnitude = Math.sqrt(magnitude);
+        if (magnitude == 0) {
+            return new vector3(0, 0, 0);
+        }
+        return new vector3(vector.x/magnitude,vector.y/magnitude,vector.z/magnitude);
     }
     public static vector3 cross(vector3 vector,vector3 other){        
         // i 
